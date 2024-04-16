@@ -3,8 +3,7 @@ package ca.master.se2aa4.mazerunner;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 public class Path {
     private final List<Character> path = new ArrayList<>();
@@ -15,7 +14,10 @@ public class Path {
      */
     public Path() {
     }
-
+    
+    // F R 2F L 4F R 2F L 2F
+    // F R 2F L 3F R F L F R F L 2F
+    
     /**
      * Initialize path from a Path String.
      *
@@ -24,14 +26,12 @@ public class Path {
     public Path(String pathStr) {
         String expanded = expandFactorizedStringPath(pathStr);
         for (Character c : expanded.toCharArray()) {
-//            if (c != ' ') {
-//                if (c != 'F' && c != 'L' && c != 'R') {
-//                    throw new IllegalArgumentException("Instruction '" + c + "' is invalid. Must be 'F', 'L', or 'R'.");
-//                }
-//                addStep(c);
-//            }
-        	logger.info("** HELLOO {}", c);
-        	addStep(c);
+            if (c != ' ') {
+                if (c != 'F' && c != 'L' && c != 'R') {
+                    throw new IllegalArgumentException("Instruction '" + c + "' is invalid. Must be 'F', 'L', or 'R'.");
+                }
+                addStep(c);
+            }
         }
     }
 
@@ -70,6 +70,10 @@ public class Path {
      */
     public List<Character> getPathSteps() {
         return new ArrayList<>(this.path);
+    }
+    
+    public void reversePath() {
+        Collections.reverse(this.path);
     }
 
     /**

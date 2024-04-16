@@ -3,13 +3,12 @@ package ca.master.se2aa4.mazerunner;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import Path.expandFactorizedStringPath;
-
 import java.util.*;
 
 public class DijkstraSolver implements MazeSolver {
 	
 	private static final Logger logger = LogManager.getLogger();
+	Direction prv;
 
     @Override
     public Path solve(Maze maze) {
@@ -63,34 +62,70 @@ public class DijkstraSolver implements MazeSolver {
 
     private Path reconstructPath(Map<Position, Position> parentMap, Maze maze) {
         Position current = maze.getEnd();
-        //List<Character> pathSteps = new ArrayList<>();
-        Path pathSteps = new Path();
+        Direction dir = Direction.LEFT;
+        prv = Direction.LEFT;
+        Path path = new Path();
 
         while (parentMap.containsKey(current)) {
             Position parent = parentMap.get(current);
-            pathSteps.addStep(getStepDirection(parent, current));
+            String c = getStepDirection(parent, current, dir);
+            
+            if (c == "LF")
+            {
+            	dir = dir.turnRight();
+            }
+            
+            else if (c == "RF")
+            {
+            	dir = dir.turnLeft();
+            }
+            
+            path.addStep(c.charAt(0));
+            
+            if (c != "F")
+            	path.addStep(c.charAt(1));
+            
             current = parent;
         }
-        //Collections.reverse(pathSteps);
-        
-        logger.info("** H{}", pathSteps.toString());
-        
-        return new Path(pathSteps.toString());
+
+        path.reversePath();
+        return path;
     }
 
-    private char getStepDirection(Position from, Position to) {
+    private String getStepDirection(Position from, Position to, Direction dir) {
+//    	logger.info("Reading the maze from file {}", dir);
         int dx = to.x() - from.x();
         int dy = to.y() - from.y();
-
-        if (dx == 0 && dy == 1) {
-            return '↑';
-        } else if (dx == 0 && dy == -1) {
-            return '↓';
-        } else if (dx == 1 && dy == 0) {
-            return '→';
-        } else if (dx == -1 && dy == 0) {
-            return '←';
-        } else {
+        
+        if (dx == 1 && dy == 0)
+        	dir = Direction.LEFT;
+        else if (dx == -1 && dy == 0)
+        	dir = Direction.RIGHT;
+        else if (dx == 0 && dy == 1)
+        	dir = Direction.UP;
+        else if (dx == 0 && dy == -1)
+        	dir = Direction.DOWN;
+        
+        
+        if (prv != dir.turnLeft() && prv != dir.turnRight())
+        {
+            return "F";
+        }
+        
+        else if (prv == dir.turnLeft())
+        {
+        	prv = dir;
+            return "LF";
+        }
+        
+        else if (prv == dir.turnRight())
+        {
+        	prv = dir;
+            return "RF";
+        }
+        
+        else
+        {
             throw new IllegalArgumentException("Invalid path: unexpected step direction.");
         }
     }
@@ -105,3 +140,67 @@ public class DijkstraSolver implements MazeSolver {
         }
     }
 }
+
+
+
+
+
+
+
+
+
+
+//public String convertPath(Path path) {
+//
+//StringBuilder convertedPath = new StringBuilder();
+//String pathString = path.getPath();
+//
+//// Start direction assumed to be up
+//Direction currentDirection = Direction.RIGHT;
+//
+//for (int i = 0; i < pathString.length(); i++) {
+//    char step = pathString.charAt(i);
+//    if (step == '↑' || step == '↓' || step == '←' || step == '→') {
+//        // Change current direction
+//        currentDirection = step;
+//    } else if (step == 'F') {
+//        convertedPath.append('F');
+//    } else if (step == 'R') {
+//        currentDirection = turnRight(currentDirection);
+//    } else if (step == 'L') {
+//        currentDirection = turnLeft(currentDirection);
+//    }
+//}
+//
+//return convertedPath.toString();
+//}
+//
+//private char turnRight(char currentDirection) {
+//switch (currentDirection) {
+//    case '↑':
+//        return '→';
+//    case '→':
+//        return '↓';
+//    case '↓':
+//        return '←';
+//    case '←':
+//        return '↑';
+//    default:
+//        throw new IllegalArgumentException("Invalid direction");
+//}
+//}
+//
+//private char turnLeft(char currentDirection) {
+//switch (currentDirection) {
+//    case '↑':
+//        return '←';
+//    case '←':
+//        return '↓';
+//    case '↓':
+//        return '→';
+//    case '→':
+//        return '↑';
+//    default:
+//        throw new IllegalArgumentException("Invalid direction");
+//}
+//}
