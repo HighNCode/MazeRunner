@@ -13,7 +13,6 @@ public class Main {
         CommandLineParser parser = new DefaultParser();
         
         CommandLine cmd = null;
-        logger.info("** Starting Maze Runner", cmd);
         try {
             cmd = parser.parse(getParserOptions(), args);
             String filePath = cmd.getOptionValue('i');
@@ -28,7 +27,7 @@ public class Main {
                     System.out.println("incorrect path");
                 }
             } else {
-                String method = cmd.getOptionValue("method", "righthand");
+                String method = cmd.getOptionValue("method");
                 Path path = solveMaze(method, maze);
                 System.out.println(path.getFactorizedForm());
             }
@@ -57,8 +56,12 @@ public class Main {
                 solver = new RightHandSolver();
             }
             case "tremaux" -> {
-                logger.debug("Tremaux algorithm chosen.");
+                logger.info("Tremaux algorithm chosen.");
                 solver = new TremauxSolver();
+            }
+            case "dijkstra" -> {
+                logger.info("Dijkstra algorithm chosen.");
+                solver = new DijkstraSolver();
             }
             default -> {
                 throw new Exception("Maze solving method '" + method + "' not supported.");

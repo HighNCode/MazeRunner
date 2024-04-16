@@ -1,11 +1,15 @@
 package ca.master.se2aa4.mazerunner;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import java.util.ArrayList;
 import java.util.List;
 
 public class Path {
     private final List<Character> path = new ArrayList<>();
-
+    
+    private static final Logger logger = LogManager.getLogger();
     /**
      * Initialize an empty Path.
      */
@@ -20,12 +24,14 @@ public class Path {
     public Path(String pathStr) {
         String expanded = expandFactorizedStringPath(pathStr);
         for (Character c : expanded.toCharArray()) {
-            if (c != ' ') {
-                if (c != 'F' && c != 'L' && c != 'R') {
-                    throw new IllegalArgumentException("Instruction '" + c + "' is invalid. Must be 'F', 'L', or 'R'.");
-                }
-                addStep(c);
-            }
+//            if (c != ' ') {
+//                if (c != 'F' && c != 'L' && c != 'R') {
+//                    throw new IllegalArgumentException("Instruction '" + c + "' is invalid. Must be 'F', 'L', or 'R'.");
+//                }
+//                addStep(c);
+//            }
+        	logger.info("** HELLOO {}", c);
+        	addStep(c);
         }
     }
 
