@@ -12,65 +12,44 @@ public class Maze {
     private static final Logger logger = LogManager.getLogger();
 
     private final List<List<Boolean>> maze = new ArrayList<>();
-
     private final Position start;
     private final Position end;
 
-    /**
-     * Initialize a Maze from a file path.
-     *
-     * @param filePath File path of the maze file
-     * @throws Exception If maze cannot be read, or maze has no start or end
-     */
-    public Maze(String filePath) throws Exception {
-        logger.debug("Reading the maze from file " + filePath);
-        BufferedReader reader = new BufferedReader(new FileReader(filePath));
-        String line;
-        while ((line = reader.readLine()) != null) {
-            List<Boolean> newLine = new ArrayList<>();
-            for (int idx = 0; idx < line.length(); idx++) {
-                if (line.charAt(idx) == '#') {
-                    newLine.add(true);
-                } else if (line.charAt(idx) == ' ') {
-                    newLine.add(false);
-                }
-            }
-            maze.add(newLine);
-        }
-        start = findStart();
-        end = findEnd();
+    // Constructor for internal use
+    private Maze(List<List<Boolean>> maze, Position start, Position end) {
+        this.maze.addAll(maze);
+        this.start = start;
+        this.end = end;
     }
 
     /**
-     * Find start position of the maze.
+     * Create a Maze instance from a maze structure and start/end positions.
      *
-     * @return The start position
-     * @throws Exception If no valid start position exists
+     * @param maze  Maze structure
+     * @param start Start position
+     * @param end   End position
+     * @return Maze instance
      */
-    private Position findStart() throws Exception {
-        for (int i = 0; i < maze.size(); i++) {
-            Position pos = new Position(0, i);
-            if (!isWall(pos)) {
-                return pos;
-            }
-        }
-        throw new Exception("Invalid maze (no start position available)");
+    public static Maze createMaze(List<List<Boolean>> maze, Position start, Position end) {
+        return new Maze(maze, start, end);
     }
 
     /**
-     * Find start end of the maze.
+     * Get horizontal (X) size of Maze.
      *
-     * @return The end position
-     * @throws Exception If no valid end position exists
+     * @return Horizontal size
      */
-    private Position findEnd() throws Exception {
-        for (int i = 0; i < maze.size(); i++) {
-            Position pos = new Position(maze.getFirst().size() - 1, i);
-            if (!isWall(pos)) {
-                return pos;
-            }
-        }
-        throw new Exception("Invalid maze (no end position available)");
+    public int getSizeX() {
+        return this.maze.get(0).size();
+    }
+
+    /**
+     * Get vertical (Y) size of Maze.
+     *
+     * @return Vertical size
+     */
+    public int getSizeY() {
+        return this.maze.size();
     }
 
     /**
@@ -99,24 +78,6 @@ public class Maze {
      */
     public Position getEnd() {
         return end;
-    }
-
-    /**
-     * Get horizontal (X) size of Maze.
-     *
-     * @return Horizontal size
-     */
-    public int getSizeX() {
-        return this.maze.getFirst().size();
-    }
-
-    /**
-     * Get vertical (Y) size of Maze.
-     *
-     * @return Vertical size
-     */
-    public int getSizeY() {
-        return this.maze.size();
     }
 
     /**

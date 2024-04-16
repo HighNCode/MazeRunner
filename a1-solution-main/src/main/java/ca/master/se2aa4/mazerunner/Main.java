@@ -4,6 +4,7 @@ import org.apache.commons.cli.*;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+
 public class Main {
 
     private static final Logger logger = LogManager.getLogger();
@@ -16,9 +17,11 @@ public class Main {
         try {
             cmd = parser.parse(getParserOptions(), args);
             String filePath = cmd.getOptionValue('i');
-            Maze maze = new Maze(filePath);
+            MazeReader mazeReader = new MazeReader(); // Create an instance of MazeReader
+            MazeData mazeData = mazeReader.readMazeFromFile(filePath); // Call readMazeFromFile on the instance
+            Maze maze = Maze.createMaze(mazeData.getMazeStructure(), mazeData.getStart(), mazeData.getEnd());
 
-            if (cmd.getOptionValue("p") != null) {
+            if (cmd.hasOption("p")) {
                 logger.info("Validating path");
                 Path path = new Path(cmd.getOptionValue("p"));
                 if (maze.validatePath(path)) {
@@ -40,43 +43,18 @@ public class Main {
         logger.info("End of MazeRunner");
     }
 
-    /**
-     * Solve provided maze with specified method.
-     *
-     * @param method Method to solve maze with
-     * @param maze Maze to solve
-     * @return Maze solution path
-     * @throws Exception If provided method does not exist
-     */
-    private static Path solveMaze(String method, Maze maze) throws Exception {
-        MazeSolver solver = null;
-        switch (method) {
-            case "righthand" -> {
-                logger.debug("RightHand algorithm chosen.");
-                solver = new RightHandSolver();
-            }
-            case "tremaux" -> {
-                logger.info("Tremaux algorithm chosen.");
-                solver = new TremauxSolver();
-            }
-            case "dijkstra" -> {
-                logger.info("Dijkstra algorithm chosen.");
-                solver = new DijkstraSolver();
-            }
-            default -> {
-                throw new Exception("Maze solving method '" + method + "' not supported.");
-            }
+    private static Path solveMaze(String method, Maze maze) {
+        try {
+            MazeSolver solver = MazeSolverFactory.createSolver(method);
+            logger.info(method + " algorithm chosen.");
+            return solver.solve(maze);
+        } catch (Exception e) {
+            System.err.println("Maze solving method '" + method + "' failed. Reason: " + e.getMessage());
+            logger.error("Maze solving method '" + method + "' failed. Reason: " + e.getMessage());
+            return new Path();
         }
-
-        logger.info("Computing path");
-        return solver.solve(maze);
     }
 
-    /**
-     * Get options for CLI parser.
-     *
-     * @return CLI parser options
-     */
     private static Options getParserOptions() {
         Options options = new Options();
 
