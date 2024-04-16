@@ -11,8 +11,9 @@ public class Main {
     public static void main(String[] args) {
         logger.info("** Starting Maze Runner");
         CommandLineParser parser = new DefaultParser();
-
+        
         CommandLine cmd = null;
+        logger.info("** Starting Maze Runner", cmd);
         try {
             cmd = parser.parse(getParserOptions(), args);
             String filePath = cmd.getOptionValue('i');
