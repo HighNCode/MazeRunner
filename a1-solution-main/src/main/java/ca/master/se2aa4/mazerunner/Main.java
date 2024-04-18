@@ -48,7 +48,7 @@ public class Main {
                 System.out.println("Method time: " + methodTime + " ms");
 
                 if (cmd.hasOption("baseline")) {
-                    double improvement = (double) methodTime / baselineTime;
+                    double improvement = (double) baselineTime/methodTime;
                     System.out.printf("Improvement on the path as a speedup: %.5f%n", improvement);
                 }
             }
@@ -75,10 +75,10 @@ public class Main {
     
     private static long measureTime(Runnable task) {
         long startTime = System.nanoTime();
-        System.out.println("start time: " + startTime + " ms");
+      
         task.run();
         long endTime = System.nanoTime();
-        System.out.println("end time: " + endTime + " ms");
+      
         return TimeUnit.MILLISECONDS.convert(endTime - startTime, TimeUnit.NANOSECONDS);
     }
 
