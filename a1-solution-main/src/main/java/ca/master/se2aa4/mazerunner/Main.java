@@ -14,7 +14,7 @@ public class Main {
         logger.info("** Starting Maze Runner");
         CommandLineParser parser = new DefaultParser();
         long baselineTime = 0;
-        
+        long methodTime=0;
         CommandLine cmd = null;
         try {
             cmd = parser.parse(getParserOptions(), args);
@@ -44,12 +44,12 @@ public class Main {
                 Path path = solveMaze(method, maze);
                 System.out.println(path.getFactorizedForm());
                 
-                long methodTime = measureTime(() -> solveMaze(method, maze));
+                methodTime = measureTime(() -> solveMaze(method, maze));
                 System.out.println("Method time: " + methodTime + " ms");
 
                 if (cmd.hasOption("baseline")) {
                     double improvement = (double) methodTime / baselineTime;
-                    System.out.printf("Improvement on the path as a speedup: %.2f%n", improvement);
+                    System.out.printf("Improvement on the path as a speedup: %.5f%n", improvement);
                 }
             }
         } catch (Exception e) {
@@ -75,8 +75,10 @@ public class Main {
     
     private static long measureTime(Runnable task) {
         long startTime = System.nanoTime();
+        System.out.println("start time: " + startTime + " ms");
         task.run();
         long endTime = System.nanoTime();
+        System.out.println("end time: " + endTime + " ms");
         return TimeUnit.MILLISECONDS.convert(endTime - startTime, TimeUnit.NANOSECONDS);
     }
 
